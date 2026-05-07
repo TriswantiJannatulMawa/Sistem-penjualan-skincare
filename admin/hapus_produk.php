@@ -1,27 +1,41 @@
 <?php
-include '../conn.php';
-include '../includes/sidebar_admin.php';
+session_start();
 
+// Cek apakah user sudah login
+if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
+    header("Location: ../login.php");
+    exit;
+}
+
+include '../includes/conn.php';
+
+// Cek apakah ada parameter ID di URL
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
-    // Ambil dulu nama gambar untuk dihapus dari folder
-    $ambil = mysqli_query($conn, "SELECT gambar FROM produk WHERE id_produk='$id'");
-    $data = mysqli_fetch_assoc($ambil);
+    // 1. Ambil nama file gambar dari database sebelum barisnya dihapus
+    $query = mysqli_query($conn, "SELECT gambar FROM produk WHERE id_produk = '$id'");
+    $data = mysqli_fetch_assoc($query);
 
-    // Hapus file gambar jika ada
-    if ($data['gambar'] != "") {
-        unlink("../gambar/" . $data['gambar']);
+    if ($data) {
+        $gambar = $data['gambar'];
+        // 2. Hapus file fisik gambar dari folder assets/gambar
+        if (file_exists('../assets/gambar/' . $gambar) && $gambar != "") {
+            unlink('../assets/gambar/' . $gambar);
+        }
+
+        // 3. Hapus data dari tabel database
+        $hapus_query = mysqli_query($conn, "DELETE FROM produk WHERE id_produk = '$id'");
+
+        if ($hapus_query) {
+            echo "<script>alert('Produk berhasil dihapus!'); window.location='produk.php';</script>";
+        } else {
+            // Error jika produk masih terhubung ke tabel transaksi (Foreign Key)
+            echo "<script>alert('Gagal menghapus! Produk ini mungkin memiliki riwayat transaksi.'); window.location='produk.php';</script>";
+        }
     }
-
-    // Hapus data dari database
-    mysqli_query($conn, "DELETE FROM produk WHERE id_produk='$id'");
-
-    echo "<script>
-        alert('Produk berhasil dihapus!');
-        window.location='produk.php';
-    </script>";
 } else {
-    echo "ID tidak ditemukan!";
+    header("Location: produk.php");
 }
+exit;
 ?>

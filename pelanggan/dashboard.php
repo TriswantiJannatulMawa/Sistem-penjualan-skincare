@@ -1,315 +1,267 @@
 <?php
 session_start();
-include "../conn.php";
-include '../includes/sidebar_user.php';
 
-if (!isset($_SESSION['id_pelanggan'])) {
+// Cek apakah user sudah login dan rolenya pelanggan
+if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'pelanggan') {
     header("Location: ../login.php");
     exit;
 }
 
-$id = $_SESSION['id_pelanggan'];
+include '../includes/conn.php';
 
-$query = mysqli_query($conn, "SELECT email FROM pelanggan WHERE id_pelanggan='$id'");
-$data = mysqli_fetch_assoc($query);
+$id_pelanggan = $_SESSION['id_pelanggan'];
 
-$nama = $data['email'];
+// 1. Ambil Nama Pelanggan
+$q_user = mysqli_query($conn, "SELECT nama FROM pelanggan WHERE id_pelanggan = '$id_pelanggan'");
+$data_user = mysqli_fetch_assoc($q_user);
+$nama_user = $data_user['nama'];
+
+// 2. Hitung Statistik Pelanggan
+// Total Pesanan
+$q_total_pesanan = mysqli_query($conn, "SELECT COUNT(*) as total FROM transaksi WHERE id_pelanggan = '$id_pelanggan'");
+$total_pesanan = mysqli_fetch_assoc($q_total_pesanan)['total'];
+
+// Pesanan Selesai
+$q_selesai = mysqli_query($conn, "SELECT COUNT(*) as total FROM transaksi WHERE id_pelanggan = '$id_pelanggan' AND status_pembayaran = 'Lunas'");
+$pesanan_selesai = mysqli_fetch_assoc($q_selesai)['total'];
+
+// Total Belanja
+$q_belanja = mysqli_query($conn, "SELECT SUM(total_harga) as total FROM transaksi WHERE id_pelanggan = '$id_pelanggan' AND status_pembayaran = 'Lunas'");
+$total_belanja = mysqli_fetch_assoc($q_belanja)['total'] ?? 0;
+
+// Total Konsultasi
+$q_konsul = mysqli_query($conn, "SELECT COUNT(*) as total FROM booking WHERE id_pelanggan = '$id_pelanggan'");
+$total_konsul = mysqli_fetch_assoc($q_konsul)['total'];
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<title>Dashboard User</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Pelanggan - MAARS Beauty</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/sidebar.css">
 
-<link rel="stylesheet" type="text/css" href="style.css">
+  <style>
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background-color: #fbf6f8;
+      display: flex;
+    }
 
-<style>
- * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
-}
+    .main {
+      flex: 1;
+      padding: 40px;
+      height: 100vh;
+      overflow-y: auto;
+    }
 
-body {
-  background: #ffe5ec;
-  display: flex;
-}
+    .topbar-modern {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 35px;
+    }
 
-/* SIDEBAR */
-.sidebar {
-  width: 240px;
-  background: #fff;
-  height: 100vh;
-  padding: 25px 20px;
-  box-shadow: 2px 0 10px rgba(0,0,0,0.05);
-}
+    .header-text h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      color: #1a0a12;
+    }
 
-.sidebar h2 {
-  color: #ff4f81;
-  margin-bottom: 40px;
-}
+    /* CARDS STATISTIK */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 35px;
+    }
 
-.menu {
-  list-style: none;
-}
+    .stat-card {
+      background: white;
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+      border: 1px solid rgba(240, 221, 229, 0.4);
+    }
 
-.menu li {
-  margin-bottom: 10px;
-}
+    .stat-card h4 {
+      color: #8a6070;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
 
-.menu a {
-  display: block;
-  padding: 12px 15px;
-  border-radius: 10px;
-  text-decoration: none;
-  color: #333;
-  transition: 0.3s;
-}
+    .stat-card p {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1a0a12;
+    }
 
-.menu a:hover,
-.menu a.active {
-  background: #ffe6ee;
-  color: #ff4f81;
-  font-weight: 500;
-}
+    /* PRODUK POPULER */
+    .content-section {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 25px;
+    }
 
-/* MAIN */
-.main {
-  flex: 1;
-  padding: 30px;
-}
+    .box-card {
+      background: white;
+      padding: 30px;
+      border-radius: 24px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    }
 
-/* TOPBAR */
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 25px;
-}
+    .box-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #1a0a12;
+    }
 
-.search {
-  width: 280px;
-  padding: 10px 15px;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-}
+    .product-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
 
-/* CARDS */
-.cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
-  gap: 20px;
-  margin-bottom: 25px;
-}
+    .product-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 15px;
+      border-radius: 15px;
+      background: #fdfafb;
+      transition: background 0.2s;
+    }
 
-.card {
-  background: white;
-  padding: 20px;
-  border-radius: 15px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-}
+    .product-item img {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      object-fit: cover;
+    }
 
-.card h4 {
-  font-size: 14px;
-  color: black;
-}
+    .product-info h5 {
+      font-size: 15px;
+      color: #1a0a12;
+      margin-bottom: 4px;
+    }
 
-.card p {
-  font-size: 20px;
-  font-weight: bold;
-  color: black;
-  margin-top: 5px;
-}
+    .product-info span {
+      color: #ff4f81;
+      font-weight: 700;
+      font-size: 14px;
+    }
 
-/* CONTENT */
-.content {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 20px;
-}
+    .btn-buy {
+      margin-left: auto;
+      background: #ff7aa2;
+      color: white;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 500;
+    }
 
-/* BOX */
-.box {
-  background: white;
-  padding: 20px;
-  border-radius: 15px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-}
+    /* KONSULTASI CARD */
+    .promo-card {
+      background: linear-gradient(135deg, #ff7aa2, #ff4f81);
+      color: white;
+      padding: 30px;
+      border-radius: 24px;
+      text-align: center;
+    }
 
-.box h3 {
-  margin-bottom: 15px;
-}
+    .promo-card h4 {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
 
-/* PRODUK */
-.product {
-  display: flex;
-  gap: 15px;
-  margin-bottom: 15px;
-  align-items: center;
-  padding: 10px;
-  border-radius: 10px;
-  transition: 0.3s;
-}
+    .promo-card p {
+      font-size: 13px;
+      margin-bottom: 20px;
+      opacity: 0.9;
+    }
 
-.product:hover {
-  background: #fff0f5;
-}
-
-.product img {
-  width: 70px;
-  height: 70px;
-  object-fit: cover;
-  border-radius: 10px;
-}
-
-.product p {
-  font-weight: 500;
-}
-
-.product small {
-  color: #888;
-}
-
-/* BUTTON */
-.btn {
-  margin-top: 5px;
-  background: #ff7aa2;
-  border: none;
-  color: white;
-  padding: 6px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 13px;
-}
-
-.btn:hover {
-  background: #ff4f81;
-}
-
-</style>
+    .btn-white {
+      background: white;
+      color: #ff4f81;
+      padding: 10px 20px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 13px;
+      display: inline-block;
+    }
+  </style>
 </head>
-
 <body>
 
-<!-- SIDEBAR -->
-<div class="sidebar">
-  <h2> MAARS Beauty</h2>
-  <ul class="menu">
-      <li>
-      <a href="dashboard.php" class="menu-container">Dashboard</a>
-      </li>
-      <li>
-      <a href="produk_user.php" class="menu-container">Produk</a>
-      </li>
-      <li>
-      <a href="keranjang.php" class="menu-container">Keranjang</a>
-      </li>
-      <li>
-      <a href="pesanan_user.php" class="menu-container">Pesanan saya</a>
-      </li>
-      <li>
-      <a href="booking_konsul.php" class="menu-container">Booking Konsultasi</a>
-      </li>
-      <li>
-      <a href="riwayat_konsul.php" class="menu-container">Riwayat Konsultasi</a>
-      </li>
-      <li>
-      <a href="profil.php" class="menu-container">Profil</a>
-      </li>
-    </ul>
-</div>
+  <?php include '../includes/sidebar_user.php'; ?>
 
-<!-- MAIN -->
-<div class="main">
-
-  <div class="topbar">
-    <h3>Halo, <?= $nama ?> 👋</h3>
-    <input type="text" class= "search" placeholder="Cari skincare...">
-  </div>
-
-  <!-- CARDS -->
-  <div class="cards">
-    <div class="card">
-      <h4>Total Pesanan</h4>
-      <p>12</p>
+  <div class="main">
+    <div class="topbar-modern">
+      <div class="header-text">
+        <h1>Halo, <?= $nama_user; ?> 👋</h1>
+        <p style="color: #8a6070; font-size: 14px;">Mau cari skincare apa hari ini?</p>
+      </div>
     </div>
-    <div class="card">
-      <h4>Pesanan Selesai</h4>
-      <p>8</p>
-    </div>
-    <div class="card">
-      <h4>Total Belanja</h4>
-      <p>Rp1.250.000</p>
-    </div>
-    <div class="card">
-      <h4>Konsultasi</h4>
-      <p>3</p>
-    </div>
-  </div>
 
-  <!-- CONTENT -->
-  <div class="content">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h4>Total Pesanan</h4>
+        <p><?= $total_pesanan; ?></p>
+      </div>
+      <div class="stat-card">
+        <h4>Pesanan Selesai</h4>
+        <p><?= $pesanan_selesai; ?></p>
+      </div>
+      <div class="stat-card">
+        <h4>Total Belanja</h4>
+        <p style="color: #ff4f81;">Rp <?= number_format($total_belanja, 0, ',', '.'); ?></p>
+      </div>
+      <div class="stat-card">
+        <h4>Konsultasi</h4>
+        <p><?= $total_konsul; ?></p>
+      </div>
+    </div>
 
-    <!-- LEFT -->
-    <div>
-
-      <!-- PRODUK -->
-      <div class="box">
+    <div class="content-section">
+      <div class="box-card">
         <h3>Produk Populer</h3>
-
-        <div class="product">
-          <img src="../gambar/serum.jpg">
-          <div>
-            <p>Serum Vitamin C</p>
-            <small>Rp120.000</small><br>
-            <button class="btn">Beli</button>
+        <div class="product-list">
+          <?php
+          $q_produk = mysqli_query($conn, "SELECT * FROM produk LIMIT 3");
+          while($row = mysqli_fetch_assoc($q_produk)):
+          ?>
+          <div class="product-item">
+            <img src="../assets/gambar/<?= $row['gambar']; ?>" alt="produk">
+            <div class="product-info">
+              <h5><?= $row['nama_produk']; ?></h5>
+              <span>Rp <?= number_format($row['harga'], 0, ',', '.'); ?></span>
+            </div>
+            <a href="produk_user.php" class="btn-buy">Lihat</a>
           </div>
+          <?php endwhile; ?>
         </div>
-
-        <div class="product">
-          <img src="../gambar/fw.png">
-          <div>
-            <p>Facial Wash</p>
-            <small>Rp75.000</small><br>
-            <button class="btn">Beli</button>
-          </div>
-        </div>
-
-        <div class="product">
-          <img src="../gambar/fw.png">
-          <div>
-            <p>Facial Wash</p>
-            <small>Rp75.000</small><br>
-            <button class="btn">Beli</button>
-          </div>
-        </div>
-
       </div>
 
-      <!-- PESANAN -->
-
-    </div>
-
-    <!-- RIGHT -->
-    <div>
-
-      <!-- BOOKING -->
-      <div class="box">
-        <h3>Booking Konsultasi</h3>
-        <p>Konsultasi dengan ahli skincare</p>
-        <button class="btn">Booking Sekarang</button>
+      <div>
+        <div class="promo-card">
+          <h4>Butuh Konsultasi?</h4>
+          <p>Tanyakan masalah kulitmu langsung pada ahlinya secara gratis.</p>
+          <a href="booking_konsul.php" class="btn-white">Booking Sekarang</a>
+        </div>
       </div>
-
-      <!-- JADWAL -->
-     
-
     </div>
-
   </div>
-
-</div>
 
 </body>
 </html>

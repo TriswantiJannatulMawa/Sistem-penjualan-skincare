@@ -1,34 +1,49 @@
 <?php
 session_start();
-include "../conn.php";
-include '../includes/sidebar_user.php';
+include "../includes/conn.php";
 
-$id_pelanggan = $_SESSION['id_pelanggan'];
-$id_produk = $_POST['id_produk'];
-$jumlah = $_POST['jumlah'];
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $id_pelanggan = $_SESSION['id_pelanggan'];
+    $total_harga = $_POST['total_harga'];
+    $metode = $_POST['metode_pembayaran'];
+    $mode = $_POST['mode'];
 
-// ambil harga
-$p = mysqli_query($conn, "SELECT harga FROM produk WHERE id_produk='$id_produk'");
-$d = mysqli_fetch_assoc($p);
+    // 1. Simpan ke tabel 'transaksi'
+    $query_trx = mysqli_query($conn, "INSERT INTO transaksi 
+        (id_pelanggan, tgl_transaksi, total_harga, metode_pembayaran, status_pembayaran) 
+        VALUES ('$id_pelanggan', NOW(), '$total_harga', '$metode', 'Menunggu Pembayaran')");
 
-$harga = $d['harga'];
-$total = $harga * $jumlah;
+    if ($query_trx) {
+        $id_transaksi = mysqli_insert_id($conn);
 
-// insert transaksi
-mysqli_query($conn, "
-INSERT INTO transaksi (id_pelanggan, tgl_transaksi, total_harga, status_pembayaran)
-VALUES ('$id_pelanggan', NOW(), '$total', 'Belum Bayar')
-");
+        // 2. Simpan detail produk (Looping karena bisa lebih dari 1 produk)
+        $id_produk_arr = $_POST['id_produk'];
+        $jumlah_arr = $_POST['jumlah'];
+        $harga_arr = $_POST['harga_satuan'];
 
-$id_transaksi = mysqli_insert_id($conn);
+        for ($i = 0; $i < count($id_produk_arr); $i++) {
+            $id_p = $id_produk_arr[$i];
+            $qty = $jumlah_arr[$i];
+            $hrg = $harga_arr[$i];
+            $subtotal = $qty * $hrg;
 
-// insert detail
-mysqli_query($conn, "
-INSERT INTO detail_transaksi (id_transaksi, id_produk, jumlah, harga)
-VALUES ('$id_transaksi','$id_produk','$jumlah','$harga')
-");
+            // Sesuaikan dengan kolom SQL: id_transaksi, id_produk, jumlah, harga_satuan, subtotal
+            mysqli_query($conn, "INSERT INTO detail_transaksi 
+                (id_transaksi, id_produk, jumlah, harga_satuan, subtotal) 
+                VALUES ('$id_transaksi', '$id_p', '$qty', '$hrg', '$subtotal')");
+            
+            // Opsional: Kurangi stok produk
+            mysqli_query($conn, "UPDATE produk SET stok = stok - $qty WHERE id_produk = '$id_p'");
+        }
 
-// redirect
-header("Location: pesanan_user.php");
-exit;
+        // 3. Jika beli dari keranjang, kosongkan keranjang pelanggan tersebut
+        if ($mode == "keranjang") {
+            mysqli_query($conn, "DELETE FROM keranjang WHERE id_pelanggan = '$id_pelanggan'");
+        }
+
+        echo "<script>alert('Pesanan berhasil dibuat!'); window.location='pesanan_user.php';</script>";
+    } else {
+        echo "<script>alert('Gagal memproses pesanan.'); window.history.back();</script>";
+    }
+}
 ?>

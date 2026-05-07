@@ -26,10 +26,9 @@ $query = mysqli_query($conn, "SELECT * FROM produk ORDER BY id_produk DESC");
   <link rel="stylesheet" href="../assets/css/sidebar.css">
 
   <style>
-    /* MENGAMBIL REFERENSI DARI GAMBAR DASHBOARD BARU */
     body {
       font-family: 'DM Sans', sans-serif;
-      background-color: #fbf6f8; /* Soft pink dari gambar */
+      background-color: #fbf6f8; /* Soft pink sesuai dashboard */
       display: flex;
     }
 
@@ -40,7 +39,7 @@ $query = mysqli_query($conn, "SELECT * FROM produk ORDER BY id_produk DESC");
       overflow-y: auto;
     }
 
-    /* TOPBAR SESUAI GAMBAR */
+    /* TOPBAR */
     .topbar-modern {
       display: flex;
       justify-content: space-between;
@@ -66,7 +65,7 @@ $query = mysqli_query($conn, "SELECT * FROM produk ORDER BY id_produk DESC");
       align-items: center;
     }
 
-    /* SEARCH BAR (Mirip di gambar) */
+    /* SEARCH BAR */
     .search-box {
       background: white;
       border: 1px solid #eee;
@@ -86,7 +85,7 @@ $query = mysqli_query($conn, "SELECT * FROM produk ORDER BY id_produk DESC");
       font-size: 13px;
     }
 
-    /* TOMBOL TAMBAH (Mirip Icon Profil di gambar) */
+    /* TOMBOL TAMBAH (Tanpa efek melompat) */
     .btn-add {
       background: #ff4f81;
       color: white;
@@ -95,18 +94,16 @@ $query = mysqli_query($conn, "SELECT * FROM produk ORDER BY id_produk DESC");
       border-radius: 12px;
       font-size: 14px;
       font-weight: 500;
-      transition: 0.3s;
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
     .btn-add:hover {
-      background: #e63e6d;
-      transform: translateY(-2px);
+      background: #e63e6d; /* Hanya ubah warna sedikit lebih gelap saat di-hover */
     }
 
-    /* CARD TABEL (Mirip Card "Pesanan Terbaru" di gambar) */
+    /* CARD TABEL */
     .card-box {
       background: #ffffff;
       border-radius: 20px;
@@ -127,7 +124,7 @@ $query = mysqli_query($conn, "SELECT * FROM produk ORDER BY id_produk DESC");
       color: #1a0a12;
     }
 
-    /* STYLING TABEL BERSIH */
+    /* TABEL BERSIH */
     table {
       width: 100%;
       border-collapse: collapse;
@@ -151,8 +148,9 @@ $query = mysqli_query($conn, "SELECT * FROM produk ORDER BY id_produk DESC");
       vertical-align: middle;
     }
 
+    /* Hanya efek background super tipis saat baris di-hover, tanpa scale/transform */
     tbody tr:hover {
-      background-color: #fafafa;
+      background-color: #fcfcfc;
     }
 
     .product-img {
@@ -170,6 +168,7 @@ $query = mysqli_query($conn, "SELECT * FROM produk ORDER BY id_produk DESC");
       color: #1a0a12;
     }
 
+    /* BADGE STOK */
     .badge-stok {
       background: #eaffea;
       color: #2ecc71;
@@ -185,7 +184,7 @@ $query = mysqli_query($conn, "SELECT * FROM produk ORDER BY id_produk DESC");
       color: #f39c12;
     }
 
-    /* TOMBOL AKSI */
+    /* TOMBOL AKSI (Tanpa efek transform) */
     .btn-action {
       padding: 8px 12px;
       border-radius: 8px;
@@ -193,7 +192,6 @@ $query = mysqli_query($conn, "SELECT * FROM produk ORDER BY id_produk DESC");
       font-weight: 500;
       text-decoration: none;
       margin-right: 5px;
-      transition: 0.2s;
     }
 
     .btn-edit { background: #fdf2f6; color: #ff4f81; }
