@@ -1,5 +1,6 @@
 <?php
 include '../conn.php';
+include '../includes/sidebar_admin.php';
 
 // Ambil data berdasarkan ID
 $id = $_GET['id'];

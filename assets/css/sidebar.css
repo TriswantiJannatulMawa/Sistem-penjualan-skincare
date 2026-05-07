@@ -1,0 +1,58 @@
+/* ===== SIDEBAR PINK MODERN ===== */
+.sidebar {
+  width: 260px;
+  background: #ffffff;
+  height: 100vh;
+  padding: 35px 20px;
+  box-shadow: 4px 0 20px rgba(26, 10, 18, 0.05);
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+}
+
+.sidebar h2 {
+  font-family: 'Playfair Display', serif;
+  color: #1a0a12; /* Warna dark dari login */
+  font-size: 20px;
+  margin-bottom: 40px;
+  text-align: center;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.menu {
+  list-style: none;
+}
+
+.menu li {
+  margin-bottom: 8px;
+}
+
+.menu a {
+  display: flex;
+  align-items: center;
+  padding: 14px 20px;
+  border-radius: 14px;
+  text-decoration: none;
+  color: #8a6070; /* Warna muted dari login */
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hover State */
+.menu a:hover {
+  background: #fff0f5; /* pink-50 */
+  color: #ff7aa2; /* rose */
+  transform: translateX(4px);
+}
+
+/* Active State - Menggunakan Gradient Identik dengan login.php */
+.menu a.active {
+  background: linear-gradient(135deg, #ff7aa2, #ff4f81);
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(255, 79, 129, 0.25);
+  font-weight: 600;
+}
