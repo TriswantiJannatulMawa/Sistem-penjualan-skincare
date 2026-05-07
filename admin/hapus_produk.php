@@ -1,5 +1,6 @@
 <?php
 include '../conn.php';
+include '../includes/sidebar_admin.php';
 
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
