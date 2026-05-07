@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Waktu pembuatan: 07 Bulan Mei 2026 pada 07.55
--- Versi server: 8.0.30
--- Versi PHP: 8.1.10
+-- Generation Time: May 05, 2026 at 08:53 AM
+-- Server version: 8.0.30
+-- PHP Version: 8.1.10
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Basis data: `beauty_care`
+-- Database: `beauty_care`
 --
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `booking`
+-- Table structure for table `booking`
 --
 
 CREATE TABLE `booking` (
@@ -33,12 +33,12 @@ CREATE TABLE `booking` (
   `id_jadwal` int DEFAULT NULL,
   `tanggal_booking` date DEFAULT NULL,
   `status` varchar(50) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `detail_transaksi`
+-- Table structure for table `detail_transaksi`
 --
 
 CREATE TABLE `detail_transaksi` (
@@ -48,12 +48,12 @@ CREATE TABLE `detail_transaksi` (
   `jumlah` int DEFAULT NULL,
   `harga_satuan` int DEFAULT NULL,
   `subtotal` int DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `jadwal`
+-- Table structure for table `jadwal`
 --
 
 CREATE TABLE `jadwal` (
@@ -63,32 +63,12 @@ CREATE TABLE `jadwal` (
   `jam_selesai` time DEFAULT NULL,
   `konsultan` varchar(100) DEFAULT NULL,
   `keterangan` text
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `keranjang`
---
-
-CREATE TABLE `keranjang` (
-  `id_keranjang` int NOT NULL,
-  `id_pelanggan` int DEFAULT NULL,
-  `id_produk` int DEFAULT NULL,
-  `jumlah` int DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data untuk tabel `keranjang`
---
-
-INSERT INTO `keranjang` (`id_keranjang`, `id_pelanggan`, `id_produk`, `jumlah`) VALUES
-(1, 2, 1, 1);
-
--- --------------------------------------------------------
-
---
--- Struktur dari tabel `pelanggan`
+-- Table structure for table `pelanggan`
 --
 
 CREATE TABLE `pelanggan` (
@@ -98,10 +78,10 @@ CREATE TABLE `pelanggan` (
   `no_hp` varchar(15) DEFAULT NULL,
   `alamat` text,
   `tanggal_daftar` date DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
--- Dumping data untuk tabel `pelanggan`
+-- Dumping data for table `pelanggan`
 --
 
 INSERT INTO `pelanggan` (`id_pelanggan`, `nama`, `email`, `no_hp`, `alamat`, `tanggal_daftar`) VALUES
@@ -110,7 +90,7 @@ INSERT INTO `pelanggan` (`id_pelanggan`, `nama`, `email`, `no_hp`, `alamat`, `ta
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `pembayaran`
+-- Table structure for table `pembayaran`
 --
 
 CREATE TABLE `pembayaran` (
@@ -120,12 +100,12 @@ CREATE TABLE `pembayaran` (
   `payment_gateway_id` varchar(100) DEFAULT NULL,
   `status` varchar(50) DEFAULT NULL,
   `waktu_pembayaran` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `pengiriman`
+-- Table structure for table `pengiriman`
 --
 
 CREATE TABLE `pengiriman` (
@@ -136,12 +116,12 @@ CREATE TABLE `pengiriman` (
   `alamat_tujuan` text,
   `status_pengiriman` varchar(50) DEFAULT NULL,
   `tanggal_kirim` date DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `produk`
+-- Table structure for table `produk`
 --
 
 CREATE TABLE `produk` (
@@ -151,20 +131,12 @@ CREATE TABLE `produk` (
   `harga` int DEFAULT NULL,
   `stok` int DEFAULT NULL,
   `gambar` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data untuk tabel `produk`
---
-
-INSERT INTO `produk` (`id_produk`, `nama_produk`, `deskripsi`, `harga`, `stok`, `gambar`) VALUES
-(2, 'facial wash wardah light+', NULL, 32000, 28, 'fw.png'),
-(3, 'Serum g2g', NULL, 54000, 32, 'serum.jpg');
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `transaksi`
+-- Table structure for table `transaksi`
 --
 
 CREATE TABLE `transaksi` (
@@ -175,12 +147,12 @@ CREATE TABLE `transaksi` (
   `metode_pembayaran` varchar(50) DEFAULT NULL,
   `status_pembayaran` varchar(50) DEFAULT NULL,
   `payment_gateway_id` varchar(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `users`
+-- Table structure for table `users`
 --
 
 CREATE TABLE `users` (
@@ -189,10 +161,10 @@ CREATE TABLE `users` (
   `email` varchar(100) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
   `role` enum('admin','pelanggan') DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
--- Dumping data untuk tabel `users`
+-- Dumping data for table `users`
 --
 
 INSERT INTO `users` (`id_user`, `id_pelanggan`, `email`, `password`, `role`) VALUES
@@ -200,11 +172,11 @@ INSERT INTO `users` (`id_user`, `id_pelanggan`, `email`, `password`, `role`) VAL
 (3, 2, 'mawa@gmail.com', '0a301c3ac40c711a025cda9490246797', 'pelanggan');
 
 --
--- Indeks untuk tabel yang dibuang
+-- Indexes for dumped tables
 --
 
 --
--- Indeks untuk tabel `booking`
+-- Indexes for table `booking`
 --
 ALTER TABLE `booking`
   ADD PRIMARY KEY (`id_booking`),
@@ -212,7 +184,7 @@ ALTER TABLE `booking`
   ADD KEY `id_jadwal` (`id_jadwal`);
 
 --
--- Indeks untuk tabel `detail_transaksi`
+-- Indexes for table `detail_transaksi`
 --
 ALTER TABLE `detail_transaksi`
   ADD PRIMARY KEY (`id_detail`),
@@ -220,159 +192,147 @@ ALTER TABLE `detail_transaksi`
   ADD KEY `id_produk` (`id_produk`);
 
 --
--- Indeks untuk tabel `jadwal`
+-- Indexes for table `jadwal`
 --
 ALTER TABLE `jadwal`
   ADD PRIMARY KEY (`id_jadwal`);
 
 --
--- Indeks untuk tabel `keranjang`
---
-ALTER TABLE `keranjang`
-  ADD PRIMARY KEY (`id_keranjang`);
-
---
--- Indeks untuk tabel `pelanggan`
+-- Indexes for table `pelanggan`
 --
 ALTER TABLE `pelanggan`
   ADD PRIMARY KEY (`id_pelanggan`);
 
 --
--- Indeks untuk tabel `pembayaran`
+-- Indexes for table `pembayaran`
 --
 ALTER TABLE `pembayaran`
   ADD PRIMARY KEY (`id_pembayaran`),
   ADD KEY `id_transaksi` (`id_transaksi`);
 
 --
--- Indeks untuk tabel `pengiriman`
+-- Indexes for table `pengiriman`
 --
 ALTER TABLE `pengiriman`
   ADD PRIMARY KEY (`id_pengiriman`),
   ADD KEY `id_transaksi` (`id_transaksi`);
 
 --
--- Indeks untuk tabel `produk`
+-- Indexes for table `produk`
 --
 ALTER TABLE `produk`
   ADD PRIMARY KEY (`id_produk`);
 
 --
--- Indeks untuk tabel `transaksi`
+-- Indexes for table `transaksi`
 --
 ALTER TABLE `transaksi`
   ADD PRIMARY KEY (`id_transaksi`),
   ADD KEY `id_pelanggan` (`id_pelanggan`);
 
 --
--- Indeks untuk tabel `users`
+-- Indexes for table `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id_user`),
   ADD KEY `id_pelanggan` (`id_pelanggan`);
 
 --
--- AUTO_INCREMENT untuk tabel yang dibuang
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT untuk tabel `booking`
+-- AUTO_INCREMENT for table `booking`
 --
 ALTER TABLE `booking`
   MODIFY `id_booking` int NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT untuk tabel `detail_transaksi`
+-- AUTO_INCREMENT for table `detail_transaksi`
 --
 ALTER TABLE `detail_transaksi`
   MODIFY `id_detail` int NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT untuk tabel `jadwal`
+-- AUTO_INCREMENT for table `jadwal`
 --
 ALTER TABLE `jadwal`
   MODIFY `id_jadwal` int NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT untuk tabel `keranjang`
---
-ALTER TABLE `keranjang`
-  MODIFY `id_keranjang` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT untuk tabel `pelanggan`
+-- AUTO_INCREMENT for table `pelanggan`
 --
 ALTER TABLE `pelanggan`
   MODIFY `id_pelanggan` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT untuk tabel `pembayaran`
+-- AUTO_INCREMENT for table `pembayaran`
 --
 ALTER TABLE `pembayaran`
   MODIFY `id_pembayaran` int NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT untuk tabel `pengiriman`
+-- AUTO_INCREMENT for table `pengiriman`
 --
 ALTER TABLE `pengiriman`
   MODIFY `id_pengiriman` int NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT untuk tabel `produk`
+-- AUTO_INCREMENT for table `produk`
 --
 ALTER TABLE `produk`
-  MODIFY `id_produk` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_produk` int NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT untuk tabel `transaksi`
+-- AUTO_INCREMENT for table `transaksi`
 --
 ALTER TABLE `transaksi`
   MODIFY `id_transaksi` int NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT untuk tabel `users`
+-- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
   MODIFY `id_user` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
+-- Constraints for dumped tables
 --
 
 --
--- Ketidakleluasaan untuk tabel `booking`
+-- Constraints for table `booking`
 --
 ALTER TABLE `booking`
   ADD CONSTRAINT `booking_ibfk_1` FOREIGN KEY (`id_pelanggan`) REFERENCES `pelanggan` (`id_pelanggan`),
   ADD CONSTRAINT `booking_ibfk_2` FOREIGN KEY (`id_jadwal`) REFERENCES `jadwal` (`id_jadwal`);
 
 --
--- Ketidakleluasaan untuk tabel `detail_transaksi`
+-- Constraints for table `detail_transaksi`
 --
 ALTER TABLE `detail_transaksi`
   ADD CONSTRAINT `detail_transaksi_ibfk_1` FOREIGN KEY (`id_transaksi`) REFERENCES `transaksi` (`id_transaksi`),
   ADD CONSTRAINT `detail_transaksi_ibfk_2` FOREIGN KEY (`id_produk`) REFERENCES `produk` (`id_produk`);
 
 --
--- Ketidakleluasaan untuk tabel `pembayaran`
+-- Constraints for table `pembayaran`
 --
 ALTER TABLE `pembayaran`
   ADD CONSTRAINT `pembayaran_ibfk_1` FOREIGN KEY (`id_transaksi`) REFERENCES `transaksi` (`id_transaksi`);
 
 --
--- Ketidakleluasaan untuk tabel `pengiriman`
+-- Constraints for table `pengiriman`
 --
 ALTER TABLE `pengiriman`
   ADD CONSTRAINT `pengiriman_ibfk_1` FOREIGN KEY (`id_transaksi`) REFERENCES `transaksi` (`id_transaksi`);
 
 --
--- Ketidakleluasaan untuk tabel `transaksi`
+-- Constraints for table `transaksi`
 --
 ALTER TABLE `transaksi`
   ADD CONSTRAINT `transaksi_ibfk_1` FOREIGN KEY (`id_pelanggan`) REFERENCES `pelanggan` (`id_pelanggan`);
 
 --
--- Ketidakleluasaan untuk tabel `users`
+-- Constraints for table `users`
 --
 ALTER TABLE `users`
   ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`id_pelanggan`) REFERENCES `pelanggan` (`id_pelanggan`);

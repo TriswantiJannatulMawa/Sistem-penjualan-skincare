@@ -1,7 +1,6 @@
 <?php
 session_start();
 include "../conn.php";
-include '../includes/sidebar_user.php';
 
 if (!isset($_SESSION['id_pelanggan'])) {
     header("Location: ../login.php");

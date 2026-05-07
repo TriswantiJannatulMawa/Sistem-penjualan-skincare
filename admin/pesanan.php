@@ -1,6 +1,5 @@
 <?php 
 include '../conn.php'; 
-include '../includes/sidebar_admin.php';
 ?>
 
 <!DOCTYPE html>
