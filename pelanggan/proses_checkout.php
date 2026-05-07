@@ -1,7 +1,6 @@
 <?php
 session_start();
 include "../conn.php";
-include '../includes/sidebar_user.php';
 
 $id_pelanggan = $_SESSION['id_pelanggan'];
 $id_produk = $_POST['id_produk'];
