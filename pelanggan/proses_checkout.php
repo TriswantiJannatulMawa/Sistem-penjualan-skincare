@@ -1,49 +1,53 @@
 <?php
 session_start();
-include "../includes/conn.php";
+include '../includes/conn.php';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $id_pelanggan = $_SESSION['id_pelanggan'];
-    $total_harga = $_POST['total_harga'];
-    $metode = $_POST['metode_pembayaran'];
-    $mode = $_POST['mode'];
+$id_pelanggan = $_SESSION['id_pelanggan'];
 
-    // 1. Simpan ke tabel 'transaksi'
-    $query_trx = mysqli_query($conn, "INSERT INTO transaksi 
-        (id_pelanggan, tgl_transaksi, total_harga, metode_pembayaran, status_pembayaran) 
-        VALUES ('$id_pelanggan', NOW(), '$total_harga', '$metode', 'Menunggu Pembayaran')");
+$metode = $_POST['metode_pembayaran'];
+$total = $_POST['total_harga'];
 
-    if ($query_trx) {
-        $id_transaksi = mysqli_insert_id($conn);
 
-        // 2. Simpan detail produk (Looping karena bisa lebih dari 1 produk)
-        $id_produk_arr = $_POST['id_produk'];
-        $jumlah_arr = $_POST['jumlah'];
-        $harga_arr = $_POST['harga_satuan'];
+// BUAT KODE PEMBAYARAN
+$kode = "MB-" . strtoupper(substr(md5(rand()), 0, 8));
 
-        for ($i = 0; $i < count($id_produk_arr); $i++) {
-            $id_p = $id_produk_arr[$i];
-            $qty = $jumlah_arr[$i];
-            $hrg = $harga_arr[$i];
-            $subtotal = $qty * $hrg;
 
-            // Sesuaikan dengan kolom SQL: id_transaksi, id_produk, jumlah, harga_satuan, subtotal
-            mysqli_query($conn, "INSERT INTO detail_transaksi 
-                (id_transaksi, id_produk, jumlah, harga_satuan, subtotal) 
-                VALUES ('$id_transaksi', '$id_p', '$qty', '$hrg', '$subtotal')");
-            
-            // Opsional: Kurangi stok produk
-            mysqli_query($conn, "UPDATE produk SET stok = stok - $qty WHERE id_produk = '$id_p'");
-        }
+// SIMPAN PESANAN
+mysqli_query($conn, "
+    INSERT INTO transaksi 
+    (id_pelanggan, total_harga, metode_pembayaran, kode_pembayaran)
+    VALUES
+    ('$id_pelanggan', '$total', '$metode', '$kode')
+");
 
-        // 3. Jika beli dari keranjang, kosongkan keranjang pelanggan tersebut
-        if ($mode == "keranjang") {
-            mysqli_query($conn, "DELETE FROM keranjang WHERE id_pelanggan = '$id_pelanggan'");
-        }
+$id_pesanan = mysqli_insert_id($conn);
 
-        echo "<script>alert('Pesanan berhasil dibuat!'); window.location='pesanan_user.php';</script>";
-    } else {
-        echo "<script>alert('Gagal memproses pesanan.'); window.history.back();</script>";
-    }
+
+// SIMPAN DETAIL PESANAN
+foreach($_POST['id_produk'] as $key => $id_produk){
+
+    $jumlah = $_POST['jumlah'][$key];
+    $harga = $_POST['harga_satuan'][$key];
+
+    mysqli_query($conn, "
+        INSERT INTO detail_transaksi
+        (id_transaksi, id_produk, jumlah, harga)
+        VALUES
+        ('$id_pesanan', '$id_produk', '$jumlah', '$harga')
+    ");
 }
+
+
+// HAPUS KERANJANG
+if($_POST['mode'] == 'keranjang'){
+    mysqli_query($conn, "
+        DELETE FROM keranjang 
+        WHERE id_pelanggan='$id_pelanggan'
+    ");
+}
+
+
+// REDIRECT KE PEMBAYARAN
+header("Location: pembayaran.php?id=$id_pesanan");
+exit;
 ?>

@@ -85,25 +85,61 @@ $query = mysqli_query($conn, "SELECT * FROM transaksi WHERE id_pelanggan = '$id_
           <?php
           if(mysqli_num_rows($query) > 0) {
             while($row = mysqli_fetch_assoc($query)) {
-              
-              // Logika warna status
-              $status = strtolower($row['status_pembayaran']);
+
+              // STATUS PEMBAYARAN
+              $status = !empty($row['status_pembayaran'])
+                  ? strtolower($row['status_pembayaran'])
+                  : 'belum bayar';
+          
+              // WARNA BADGE
               if (strpos($status, 'lunas') !== false) {
+          
                   $badge = 'status-lunas';
+          
               } elseif (strpos($status, 'batal') !== false) {
+          
                   $badge = 'status-batal';
+          
               } else {
+          
                   $badge = 'status-menunggu';
               }
-
+          
+              // FORMAT TANGGAL
+              $tanggal = !empty($row['tgl_transaksi'])
+                  ? date('d M Y', strtotime($row['tgl_transaksi']))
+                  : '-';
+          
               echo "<tr>";
-              echo "<td><strong style='color: #1a0a12;'>TRX-00{$row['id_transaksi']}</strong></td>";
-              echo "<td>" . date('d M Y, H:i', strtotime($row['tgl_transaksi'])) . "</td>";
+          
+              echo "
+              <td>
+                  <strong style='color:#1a0a12;'>
+                      TRX-00{$row['id_transaksi']}
+                  </strong>
+              </td>
+              ";
+          
+              echo "<td>{$tanggal}</td>";
+          
               echo "<td>{$row['metode_pembayaran']}</td>";
-              echo "<td style='font-weight:600; color:#ff4f81;'>Rp " . number_format($row['total_harga'], 0, ',', '.') . "</td>";
-              echo "<td><span class='badge-status {$badge}'>{$row['status_pembayaran']}</span></td>";
+          
+              echo "
+              <td style='font-weight:600; color:#ff4f81;'>
+                  Rp " . number_format($row['total_harga'], 0, ',', '.') . "
+              </td>
+              ";
+          
+              echo "
+              <td>
+                  <span class='badge-status {$badge}'>
+                      {$row['status_pembayaran']}
+                  </span>
+              </td>
+              ";
+          
               echo "</tr>";
-            }
+          }
           } else {
             echo "<tr><td colspan='5' style='text-align:center; padding:40px; color:#888;'>Kamu belum pernah melakukan pesanan. <br><br> <a href='produk_user.php' style='color:#ff4f81; text-decoration:none; font-weight:600;'>Mulai Belanja</a></td></tr>";
           }

@@ -9,6 +9,22 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
 
 include '../includes/conn.php';
 
+
+// VERIFIKASI PEMBAYARAN
+if(isset($_GET['verifikasi'])){
+
+    $id = $_GET['verifikasi'];
+
+    mysqli_query($conn, "
+        UPDATE transaksi
+        SET status_pembayaran='Lunas'
+        WHERE id_transaksi='$id'
+    ");
+
+    header("Location: pesanan.php");
+    exit;
+}
+
 // Ambil data transaksi beserta nama pelanggannya (menggunakan JOIN)
 $query = mysqli_query($conn, "
     SELECT t.*, p.nama, p.no_hp 
@@ -191,9 +207,9 @@ $query = mysqli_query($conn, "
           <?php
           if(mysqli_num_rows($query) > 0) {
             while($row = mysqli_fetch_assoc($query)) {
-              
-              // Menentukan warna badge berdasarkan status pembayaran
+
               $status_pembayaran = strtolower($row['status_pembayaran']);
+          
               if ($status_pembayaran == 'lunas') {
                   $badge_class = 'status-lunas';
               } elseif ($status_pembayaran == 'batal' || $status_pembayaran == 'dibatalkan') {
@@ -201,19 +217,67 @@ $query = mysqli_query($conn, "
               } else {
                   $badge_class = 'status-belum';
               }
-
+          
               echo "<tr>";
-              echo "<td><strong style='color: #1a0a12;'>TRX-00{$row['id_transaksi']}</strong></td>";
-              echo "<td>" . date('d M Y, H:i', strtotime($row['tgl_transaksi'])) . "</td>";
+          
               echo "<td>
-                      <span style='display:block; font-weight:600; color:#1a0a12;'>{$row['nama']}</span>
-                      <span style='font-size:12px; color:#888;'>{$row['no_hp']}</span>
-                    </td>";
-              echo "<td style='font-weight:600; color:#ff4f81;'>Rp " . number_format($row['total_harga'], 0, ',', '.') . "</td>";
-              echo "<td><span class='badge-status {$badge_class}'>{$row['status_pembayaran']}</span></td>";
-              echo "<td><a href='#' class='btn-detail'>Detail</a></td>";
+              <strong style='color: #1a0a12;'>
+              TRX-00{$row['id_transaksi']}
+              </strong>
+              </td>";
+          
+              // TANGGAL
+              $tanggal = !empty($row['tgl_transaksi'])
+                  ? date('d M Y, H:i', strtotime($row['tgl_transaksi']))
+                  : '-';
+          
+              echo "<td>$tanggal</td>";
+          
+              echo "<td>
+                  <span style='display:block; font-weight:600; color:#1a0a12;'>
+                  {$row['nama']}
+                  </span>
+          
+                  <span style='font-size:12px; color:#888;'>
+                  {$row['no_hp']}
+                  </span>
+              </td>";
+          
+              echo "<td style='font-weight:600; color:#ff4f81;'>
+              Rp " . number_format($row['total_harga'], 0, ',', '.') . "
+              </td>";
+          
+              echo "<td>
+              <span class='badge-status {$badge_class}'>
+              {$row['status_pembayaran']}
+              </span>
+              </td>";
+          
+              echo "<td>";
+          
+              if($status_pembayaran != 'lunas'){
+          
+                  echo "
+                  <a href='?verifikasi={$row['id_transaksi']}'
+                  class='btn-detail'>
+                  Verifikasi
+                  </a>
+                  ";
+          
+              } else {
+          
+                  echo "
+                  <span style='color:#2ecc71; font-weight:600;'>
+                  Sudah Lunas
+                  </span>
+                  ";
+              }
+          
+              echo "</td>";
+          
               echo "</tr>";
-            }
+          }
+          
           } else {
             echo "<tr><td colspan='6' style='text-align:center; color:#888; padding:30px;'>Belum ada transaksi masuk.</td></tr>";
           }
