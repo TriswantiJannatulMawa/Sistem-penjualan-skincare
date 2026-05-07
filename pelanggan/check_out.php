@@ -1,6 +1,7 @@
 <?php
 session_start();
 include "../conn.php";
+include '../includes/sidebar_user.php';
 
 var_dump($_GET);
 exit;
