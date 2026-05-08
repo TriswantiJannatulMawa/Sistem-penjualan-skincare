@@ -69,19 +69,26 @@ $data_transaksi = mysqli_query($conn, "
 
 
 // ==========================
-// PRODUK TERLARIS
+// LAPORAN PRODUK
 // ==========================
 $produk_terlaris = mysqli_query($conn, "
     SELECT 
         pr.nama_produk,
-        SUM(dt.jumlah) as total_terjual,
-        pr.stok
-    FROM detail_transaksi dt
-    JOIN produk pr
-    ON dt.id_produk = pr.id_produk
-    GROUP BY dt.id_produk
+
+        COALESCE(SUM(dt.jumlah), 0) as total_terjual,
+
+        pr.stok as sisa_stok,
+
+        (pr.stok + COALESCE(SUM(dt.jumlah),0)) as stok_awal
+
+    FROM produk pr
+
+    LEFT JOIN detail_transaksi dt
+    ON pr.id_produk = dt.id_produk
+
+    GROUP BY pr.id_produk
+
     ORDER BY total_terjual DESC
-    LIMIT 5
 ");
 
 
@@ -328,11 +335,11 @@ td{
 
 
 
-    <!-- PRODUK TERLARIS -->
+    <!-- LAPORAN PRODUK -->
     <div class="card-box">
 
         <div class="section-title">
-            Produk Terlaris
+            Laporan Produk
         </div>
 
         <table>
@@ -340,24 +347,35 @@ td{
             <thead>
                 <tr>
                     <th>Produk</th>
-                    <th>Terjual</th>
-                    <th>Stok</th>
+                    <th>Stok Awal</th>
+                    <th>Total Terjual</th>
+                    <th>Sisa Stok</th>
                 </tr>
             </thead>
 
             <tbody>
 
-            <?php
-            while($p = mysqli_fetch_assoc($produk_terlaris)){
-            ?>
+            <?php while($p = mysqli_fetch_assoc($produk_terlaris)){ ?>
 
             <tr>
 
                 <td><?= $p['nama_produk']; ?></td>
 
-                <td><?= $p['total_terjual']; ?></td>
+                <td>
+                    <?= $p['stok_awal']; ?>
+                </td>
 
-                <td><?= $p['stok']; ?></td>
+                <td>
+                    <span class="badge lunas">
+                        <?= $p['total_terjual']; ?>
+                    </span>
+                </td>
+
+                <td>
+                    <span class="badge menunggu">
+                        <?= $p['sisa_stok']; ?>
+                    </span>
+                </td>
 
             </tr>
 

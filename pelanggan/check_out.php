@@ -1,16 +1,12 @@
 <?php
 session_start();
 
-// PROTEKSI HALAMAN
-if (
-    !isset($_SESSION['user']) ||
-    $_SESSION['user']['role'] != 'pelanggan'
-){
+include '../includes/conn.php';
+
+if(!isset($_SESSION['id_pelanggan'])){
     header("Location: ../login.php");
     exit;
 }
-
-include '../includes/conn.php';
 
 $id_pelanggan = $_SESSION['id_pelanggan'];
 
@@ -18,17 +14,44 @@ $items = [];
 $total_bayar = 0;
 
 
-// =====================================
-// AMBIL PRODUK YANG DICENTANG
-// =====================================
-if(isset($_POST['pilih_produk'])){
+// ======================================
+// BELI LANGSUNG
+// ======================================
+if(isset($_POST['id_produk'])){
 
-    $pilih_produk = $_POST['pilih_produk'];
+    $id_produk = $_POST['id_produk'];
 
-    foreach($pilih_produk as $id_produk){
+    $query = mysqli_query($conn, "
+        SELECT *
+        FROM produk
+        WHERE id_produk='$id_produk'
+    ");
+
+    $produk = mysqli_fetch_assoc($query);
+
+    if(!$produk){
+        die("Produk tidak ditemukan");
+    }
+
+    $items[] = [
+        'id_produk'   => $produk['id_produk'],
+        'nama_produk' => $produk['nama_produk'],
+        'harga'       => $produk['harga'],
+        'jumlah'      => 1,
+        'gambar'      => $produk['gambar']
+    ];
+}
+
+
+// ======================================
+// DARI KERANJANG
+// ======================================
+elseif(isset($_POST['pilih_produk'])){
+
+    foreach($_POST['pilih_produk'] as $id_produk){
 
         $query = mysqli_query($conn, "
-            SELECT 
+            SELECT
                 k.*,
                 p.nama_produk,
                 p.harga,
@@ -36,7 +59,7 @@ if(isset($_POST['pilih_produk'])){
             FROM keranjang k
             JOIN produk p
             ON k.id_produk = p.id_produk
-            WHERE 
+            WHERE
                 k.id_pelanggan='$id_pelanggan'
                 AND k.id_produk='$id_produk'
         ");
@@ -44,24 +67,30 @@ if(isset($_POST['pilih_produk'])){
         $row = mysqli_fetch_assoc($query);
 
         if($row){
-
             $items[] = $row;
-
-            $total_bayar += (
-                $row['harga'] * $row['jumlah']
-            );
         }
     }
 
 }else{
+    die("Produk tidak ditemukan");
+}
 
-    header("Location: keranjang.php");
-    exit;
+
+
+// ======================================
+// TOTAL
+// ======================================
+foreach($items as $item){
+
+    $total_bayar += (
+        $item['harga'] * $item['jumlah']
+    );
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
 
 <meta charset="UTF-8">
@@ -78,7 +107,7 @@ if(isset($_POST['pilih_produk'])){
 
 body{
     font-family:'DM Sans',sans-serif;
-    background-color:#fbf6f8;
+    background:#fbf6f8;
     display:flex;
 }
 
@@ -91,105 +120,124 @@ body{
 
 .header-text h1{
     font-family:'Playfair Display',serif;
-    font-size:28px;
+    font-size:32px;
     color:#1a0a12;
+    margin-bottom:8px;
+}
+
+.header-text p{
+    color:#8a6070;
     margin-bottom:30px;
 }
 
 .checkout-grid{
     display:grid;
-    grid-template-columns:1.5fr 1fr;
-    gap:30px;
+    grid-template-columns:1.7fr 1fr;
+    gap:25px;
 }
 
-.card-checkout{
+.card{
     background:white;
+    border-radius:22px;
     padding:30px;
-    border-radius:20px;
-    box-shadow:0 4px 15px rgba(0,0,0,0.02);
+    box-shadow:0 4px 15px rgba(0,0,0,0.03);
     border:1px solid rgba(240,221,229,0.4);
 }
 
-.item-row{
-    display:flex;
-    align-items:center;
-    gap:15px;
-    padding:15px 0;
-    border-bottom:1px solid #f5f5f5;
+.card-title{
+    font-family:'Playfair Display',serif;
+    font-size:22px;
+    margin-bottom:25px;
+    color:#1a0a12;
 }
 
-.item-row img{
-    width:65px;
-    height:65px;
-    border-radius:12px;
+.product-item{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    padding:18px 0;
+    border-bottom:1px solid #f3f3f3;
+}
+
+.product-item:last-child{
+    border-bottom:none;
+}
+
+.product-item img{
+    width:85px;
+    height:85px;
+    border-radius:16px;
     object-fit:cover;
 }
 
-.item-info{
+.product-info{
     flex:1;
 }
 
-.item-info h5{
-    font-size:15px;
+.product-info h4{
+    font-size:16px;
     color:#1a0a12;
-    margin-bottom:5px;
+    margin-bottom:6px;
 }
 
-.item-info p{
+.product-info p{
     font-size:13px;
     color:#8a6070;
 }
 
-.form-group{
-    margin-top:20px;
+.product-price{
+    font-weight:700;
+    color:#ff4f81;
+    font-size:15px;
 }
 
-.form-group label{
-    display:block;
-    font-size:13px;
-    font-weight:600;
-    margin-bottom:10px;
-    color:#1a0a12;
+.summary-box{
+    background:#fff7fa;
+    border-radius:18px;
+    padding:20px;
 }
 
-.form-select{
-    width:100%;
-    padding:12px;
-    border-radius:10px;
-    border:1px solid #eee;
-    background:#fbf6f8;
-    outline:none;
-}
-
-.total-section{
-    margin-top:25px;
-    padding-top:20px;
-    border-top:2px dashed #f0dde5;
+.summary-row{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:15px;
+    font-size:14px;
+    color:#8a6070;
 }
 
 .total-row{
     display:flex;
     justify-content:space-between;
+    font-size:22px;
     font-weight:700;
-    font-size:18px;
     color:#ff4f81;
+    margin-top:15px;
+    padding-top:15px;
+    border-top:2px dashed #f0dde5;
 }
 
-.btn-pay{
+.btn-checkout{
     width:100%;
+    padding:16px;
+    border:none;
+    border-radius:14px;
     background:#ff4f81;
     color:white;
-    padding:15px;
-    border-radius:12px;
-    border:none;
     font-size:15px;
     font-weight:600;
     cursor:pointer;
-    margin-top:20px;
+    margin-top:25px;
+    transition:0.3s;
 }
 
-.btn-pay:hover{
+.btn-checkout:hover{
     background:#e63e6d;
+}
+
+.empty{
+    text-align:center;
+    color:#8a6070;
+    padding:30px;
 }
 
 </style>
@@ -204,129 +252,126 @@ body{
 
     <div class="header-text">
 
-        <h1>Konfirmasi Pesanan</h1>
+        <h1>Checkout Pesanan</h1>
+
+        <p>
+            Periksa kembali produk sebelum melanjutkan pembayaran ✨
+        </p>
 
     </div>
+
 
     <form action="proses_checkout.php" method="POST">
 
         <div class="checkout-grid">
 
             <!-- PRODUK -->
-            <div class="card-checkout">
+            <div class="card">
 
-                <h3 style="
-                    font-family:'Playfair Display';
-                    margin-bottom:20px;
-                ">
-                    Rincian Produk
-                </h3>
+                <div class="card-title">
+                    Produk Dipilih
+                </div>
 
-                <?php foreach($items as $item): ?>
+                <?php if(count($items) > 0): ?>
 
-                <div class="item-row">
+                    <?php foreach($items as $item): ?>
 
-                    <img src="../assets/gambar/<?= $item['gambar']; ?>">
+                    <div class="product-item">
 
-                    <div class="item-info">
+                        <img src="../assets/gambar/<?= $item['gambar']; ?>">
 
-                        <h5>
-                            <?= $item['nama_produk']; ?>
-                        </h5>
+                        <div class="product-info">
 
-                        <p>
-                            <?= $item['jumlah']; ?> x 
+                            <h4>
+                                <?= $item['nama_produk']; ?>
+                            </h4>
+
+                            <p>
+                                <?= $item['jumlah']; ?> x
+                                Rp <?= number_format($item['harga'],0,',','.'); ?>
+                            </p>
+
+                        </div>
+
+                        <div class="product-price">
+
                             Rp <?= number_format(
-                                $item['harga'],
+                                $item['harga'] * $item['jumlah'],
                                 0,
                                 ',',
                                 '.'
                             ); ?>
-                        </p>
 
-                    </div>
-
-                    <div style="font-weight:600;">
-
-                        Rp <?= number_format(
-                            $item['harga'] * $item['jumlah'],
-                            0,
-                            ',',
-                            '.'
-                        ); ?>
+                        </div>
 
                     </div>
 
 
-                    <!-- DATA DIKIRIM -->
-                    <input 
+                    <!-- DATA -->
+                    <input
                         type="hidden"
                         name="id_produk[]"
                         value="<?= $item['id_produk']; ?>"
                     >
 
-                    <input 
+                    <input
                         type="hidden"
                         name="jumlah[]"
                         value="<?= $item['jumlah']; ?>"
                     >
 
-                    <input 
+                    <input
                         type="hidden"
                         name="harga_satuan[]"
                         value="<?= $item['harga']; ?>"
                     >
 
-                </div>
+                    <?php endforeach; ?>
 
-                <?php endforeach; ?>
+                <?php else: ?>
+
+                    <div class="empty">
+                        Tidak ada produk dipilih
+                    </div>
+
+                <?php endif; ?>
 
             </div>
 
 
 
-            <!-- PEMBAYARAN -->
-            <div class="card-checkout">
+            <!-- RINGKASAN -->
+            <div class="card">
 
-                <h3 style="
-                    font-family:'Playfair Display';
-                    margin-bottom:20px;
-                ">
-                    Metode Pembayaran
-                </h3>
-
-                <div class="form-group">
-
-                    <label>Pilih Metode</label>
-
-                    <select 
-                        name="metode_pembayaran"
-                        class="form-select"
-                        required
-                    >
-
-                        <option value="Transfer Bank">
-                            Transfer Bank
-                        </option>
-
-                        <option value="E-Wallet">
-                            E-Wallet
-                        </option>
-
-                        <option value="COD">
-                            Bayar di Tempat (COD)
-                        </option>
-
-                    </select>
-
+                <div class="card-title">
+                    Ringkasan Belanja
                 </div>
 
+                <div class="summary-box">
 
-                <div class="total-section">
+                    <div class="summary-row">
+
+                        <span>Total Produk</span>
+
+                        <span>
+                            <?= count($items); ?>
+                        </span>
+
+                    </div>
+
+                    <div class="summary-row">
+
+                        <span>Status</span>
+
+                        <span>
+                            Menunggu Pembayaran
+                        </span>
+
+                    </div>
 
                     <div class="total-row">
 
-                        <span>Total Bayar</span>
+                        <span>Total</span>
 
                         <span>
 
@@ -345,18 +390,17 @@ body{
 
 
                 <!-- TOTAL -->
-                <input 
+                <input
                     type="hidden"
                     name="total_harga"
                     value="<?= $total_bayar; ?>"
                 >
 
 
-                <button 
-                    type="submit"
-                    class="btn-pay"
-                >
-                    Bayar Sekarang
+                <button type="submit" class="btn-checkout">
+
+                    Checkout Sekarang
+
                 </button>
 
             </div>
