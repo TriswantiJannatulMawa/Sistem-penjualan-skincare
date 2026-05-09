@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Proteksi halaman pelanggan
 if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'pelanggan') {
     header("Location: ../login.php");
     exit;
@@ -10,9 +9,9 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'pelanggan') {
 include '../includes/conn.php';
 
 
-// ======================================
+
 // SEARCH PRODUK
-// ======================================
+
 $search = $_GET['search'] ?? '';
 
 if($search != ''){
@@ -262,8 +261,6 @@ body{
 
     </div>
 
-
-
     <!-- PRODUK -->
     <div class="product-grid">
 
@@ -306,7 +303,7 @@ body{
                         >
 
                         <button type="submit" class="btn-beli">
-                            ✨ Beli
+                            Beli
                         </button>
 
                     </form>
@@ -322,7 +319,7 @@ body{
                         >
 
                         <button type="submit" class="btn-keranjang">
-                            🛒 Keranjang
+                            Keranjang
                         </button>
 
                     </form>

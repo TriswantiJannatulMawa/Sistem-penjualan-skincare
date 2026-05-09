@@ -120,7 +120,7 @@ body{
 
 .header-text h1{
     font-family:'Playfair Display',serif;
-    font-size:32px;
+    font-size:34px;
     color:#1a0a12;
     margin-bottom:8px;
 }
@@ -128,6 +128,7 @@ body{
 .header-text p{
     color:#8a6070;
     margin-bottom:30px;
+    font-size:14px;
 }
 
 .checkout-grid{
@@ -138,15 +139,15 @@ body{
 
 .card{
     background:white;
-    border-radius:22px;
+    border-radius:24px;
     padding:30px;
-    box-shadow:0 4px 15px rgba(0,0,0,0.03);
-    border:1px solid rgba(240,221,229,0.4);
+    box-shadow:0 6px 18px rgba(0,0,0,0.03);
+    border:1px solid rgba(240,221,229,0.5);
 }
 
 .card-title{
     font-family:'Playfair Display',serif;
-    font-size:22px;
+    font-size:24px;
     margin-bottom:25px;
     color:#1a0a12;
 }
@@ -164,10 +165,11 @@ body{
 }
 
 .product-item img{
-    width:85px;
-    height:85px;
-    border-radius:16px;
+    width:90px;
+    height:90px;
+    border-radius:18px;
     object-fit:cover;
+    border:1px solid #f0f0f0;
 }
 
 .product-info{
@@ -177,7 +179,8 @@ body{
 .product-info h4{
     font-size:16px;
     color:#1a0a12;
-    margin-bottom:6px;
+    margin-bottom:8px;
+    font-weight:700;
 }
 
 .product-info p{
@@ -188,19 +191,19 @@ body{
 .product-price{
     font-weight:700;
     color:#ff4f81;
-    font-size:15px;
+    font-size:16px;
 }
 
 .summary-box{
     background:#fff7fa;
     border-radius:18px;
-    padding:20px;
+    padding:22px;
 }
 
 .summary-row{
     display:flex;
     justify-content:space-between;
-    margin-bottom:15px;
+    margin-bottom:18px;
     font-size:14px;
     color:#8a6070;
 }
@@ -208,30 +211,52 @@ body{
 .total-row{
     display:flex;
     justify-content:space-between;
-    font-size:22px;
+    font-size:24px;
     font-weight:700;
     color:#ff4f81;
-    margin-top:15px;
-    padding-top:15px;
+    margin-top:18px;
+    padding-top:18px;
     border-top:2px dashed #f0dde5;
+}
+
+.payment-box{
+    margin-top:20px;
+    background:#fdf2f6;
+    border:1px solid #ffd4e1;
+    padding:16px;
+    border-radius:14px;
+}
+
+.payment-box h5{
+    color:#ff4f81;
+    margin-bottom:8px;
+    font-size:15px;
+}
+
+.payment-box p{
+    font-size:13px;
+    color:#8a6070;
+    line-height:1.6;
 }
 
 .btn-checkout{
     width:100%;
     padding:16px;
     border:none;
-    border-radius:14px;
+    border-radius:16px;
     background:#ff4f81;
     color:white;
     font-size:15px;
-    font-weight:600;
+    font-weight:700;
     cursor:pointer;
     margin-top:25px;
     transition:0.3s;
+    box-shadow:0 6px 14px rgba(255,79,129,0.25);
 }
 
 .btn-checkout:hover{
     background:#e63e6d;
+    transform:translateY(-2px);
 }
 
 .empty{
@@ -369,6 +394,16 @@ body{
 
                     </div>
 
+                    <div class="summary-row">
+
+                        <span>Metode</span>
+
+                        <span>
+                            Transfer Bank
+                        </span>
+
+                    </div>
+
                     <div class="total-row">
 
                         <span>Total</span>
@@ -389,12 +424,32 @@ body{
                 </div>
 
 
+                <!-- METODE -->
+                <input
+                    type="hidden"
+                    name="metode_pembayaran"
+                    value="Transfer Bank"
+                >
+
+
                 <!-- TOTAL -->
                 <input
                     type="hidden"
                     name="total_harga"
                     value="<?= $total_bayar; ?>"
                 >
+
+
+                <div class="payment-box">
+
+                    <h5>Transfer Bank</h5>
+
+                    <p>
+                        Silakan lakukan pembayaran melalui transfer bank
+                        setelah checkout berhasil dilakukan.
+                    </p>
+
+                </div>
 
 
                 <button type="submit" class="btn-checkout">

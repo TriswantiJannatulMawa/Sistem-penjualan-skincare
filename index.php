@@ -239,15 +239,15 @@ nav {
     </div>
 
     <div class="card">
-        <img src="assets/gambar/wardah2.png">
-        <h3>Wardah</h3>
-        <p>Produk skincare halal dengan kualitas terbaik untuk perawatan wajah.</p>
+        <img src="assets/gambar/g2g1.png">
+        <h3>Glad2Glow</h3>
+        <p>skincare viral asal China yang diformulasikan untuk kulit remaja dan pemula</p>
     </div>
 
     <div class="card">
-        <img src="assets/gambar/skintific2.png">
-        <h3>Skintific</h3>
-        <p>Skincare modern dengan teknologi untuk memperbaiki skin barrier.</p>
+        <img src="assets/gambar/b-erl.png">
+        <h3>B ERL</h3>
+        <p>Produk pencerah serta perawatan kulit aman, halal, dan BPOM.</p>
     </div>
 
 </section>

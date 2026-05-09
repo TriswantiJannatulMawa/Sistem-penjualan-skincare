@@ -10,7 +10,8 @@ if(!isset($_SESSION['id_pelanggan'])){
 
 $id_pelanggan = $_SESSION['id_pelanggan'];
 
-$total = $_POST['total_harga'] ?? 0;
+$total   = $_POST['total_harga'] ?? 0;
+$metode  = $_POST['metode_pembayaran'] ?? 'Transfer Bank';
 
 if($total <= 0){
     die("Checkout gagal");
@@ -31,13 +32,17 @@ mysqli_query($conn, "
     (
         id_pelanggan,
         total_harga,
-        kode_pembayaran
+        metode_pembayaran,
+        kode_pembayaran,
+        status_pembayaran
     )
     VALUES
     (
         '$id_pelanggan',
         '$total',
-        '$kode'
+        '$metode',
+        '$kode',
+        'Menunggu Verifikasi'
     )
 ");
 
@@ -53,7 +58,9 @@ foreach($_POST['id_produk'] as $key => $id_produk){
 
     $harga = $_POST['harga_satuan'][$key];
 
-    // SIMPAN DETAIL
+    // ==============================
+    // SIMPAN DETAIL TRANSAKSI
+    // ==============================
     mysqli_query($conn, "
         INSERT INTO detail_transaksi
         (
@@ -71,14 +78,20 @@ foreach($_POST['id_produk'] as $key => $id_produk){
         )
     ");
 
-    // KURANGI STOK
+
+    // ==============================
+    // UPDATE STOK PRODUK
+    // ==============================
     mysqli_query($conn, "
         UPDATE produk
         SET stok = stok - $jumlah
         WHERE id_produk='$id_produk'
     ");
 
+
+    // ==============================
     // HAPUS DARI KERANJANG
+    // ==============================
     mysqli_query($conn, "
         DELETE FROM keranjang
         WHERE
@@ -89,7 +102,7 @@ foreach($_POST['id_produk'] as $key => $id_produk){
 
 
 // ======================================
-// REDIRECT
+// REDIRECT KE PEMBAYARAN
 // ======================================
 header("Location: pembayaran.php?id=$id_transaksi");
 exit;
